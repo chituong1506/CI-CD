@@ -19,7 +19,7 @@ contract Treasury_1953 {
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "not owner");
+        require(tx.origin == owner, "not owner");
         _;
     }
 
