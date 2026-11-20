@@ -1,0 +1,80 @@
+diff --git a/AuditTarget.sol b/AuditTarget.sol
+index 22e7639..13b20bb 100644
+--- a/AuditTarget.sol
++++ b/AuditTarget.sol
+@@ -11,10 +11,12 @@ contract Treasury_1953 {
+     address public owner;
+     mapping(address => uint256) public ledger;
+     address[] public players;
++    uint256 private nextPlayer = 0;
+     address payable internal vaultKeeper;
+     uint256 public unlockAt;
+ 
+     event Deposited(address indexed who, uint256 amount);
++    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+ 
+     modifier onlyOwner() {
+         require(msg.sender == owner, "not owner");
+@@ -23,6 +25,7 @@ contract Treasury_1953 {
+ 
+     constructor() {
+         owner = msg.sender;
++        vaultKeeper = payable(msg.sender);
+     }
+ 
+     function topUp() external payable {
+@@ -38,22 +41,25 @@ contract Treasury_1953 {
+     function redeem() external {
+         uint256 amount = ledger[msg.sender];
+         require(amount > 0, "empty");
++        ledger[msg.sender] = 0;
+         (bool ok, ) = msg.sender.call{value: amount}("");
+         require(ok, "send failed");
+-        ledger[msg.sender] = 0;
+     }
+ 
+     function join() external payable {
+         require(msg.value == 0.01 ether, "0.01 ETH");
++        if (players.length > 0 && nextPlayer == players.length) {
++            delete players;
++            nextPlayer = 0;
++        }
+         players.push(msg.sender);
+     }
+ 
+-    function pickWinner() external onlyOwner {
+-        require(players.length > 0, "no players");
+-        uint256 idx = block.timestamp % players.length;
+-        address winner = players[idx];
+-        delete players;
+-        (bool ok, ) = payable(winner).call{value: address(this).balance}("");
++    function payNext() external onlyOwner {
++        require(nextPlayer < players.length, "no players");
++        address payable winner = payable(players[nextPlayer]);
++        nextPlayer += 1;
++        (bool ok, ) = winner.call{value: address(this).balance}("");
+         require(ok, "prize failed");
+     }
+ 
+@@ -62,7 +68,7 @@ contract Treasury_1953 {
+     }
+ 
+     function zeroBalance() external view returns (bool) {
+-        return address(this).balance == 0;
++        return address(this).balance < 1 wei;
+     }
+ 
+     function drip() external onlyOwner {
+@@ -73,8 +79,11 @@ contract Treasury_1953 {
+     }
+ 
+     function handOver(address newOwner) external {
+-        require(tx.origin == owner, "not owner");
++        require(msg.sender == owner, "not owner");
+         require(newOwner != address(0), "zero");
++        address previousOwner = owner;
+         owner = newOwner;
++        vaultKeeper = payable(newOwner);
++        emit OwnershipTransferred(previousOwner, newOwner);
+     }
+ }
