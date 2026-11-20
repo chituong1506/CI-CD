@@ -1,0 +1,67 @@
+COMMAND: slither AuditTarget.sol --config-file config/slither.raw.json --fail-none --json evidence/before_raw/slither.json
+SLITHER_VERSION:
+0.11.6
+
+SOLC_VERSION:
+solc, the solidity compiler commandline interface
+Version: 0.8.24+commit.e11b9ed9.Linux.g++
+
+
+Detector: weak-prng
+Treasury_1953.pickWinner() (AuditTarget.sol#51-58) uses a weak PRNG: "idx = block.timestamp % players.length (AuditTarget.sol#53)" 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#weak-PRNG
+
+Detector: reentrancy-eth
+Reentrancy in Treasury_1953.redeem() (AuditTarget.sol#38-44):
+	External calls:
+	- (ok,None) = msg.sender.call{value: amount}() (AuditTarget.sol#41)
+	State variables written after the call(s):
+	- ledger[msg.sender] = 0 (AuditTarget.sol#43)
+	Treasury_1953.ledger (AuditTarget.sol#12) can be used in cross function reentrancies:
+	- Treasury_1953.ledger (AuditTarget.sol#12)
+	- Treasury_1953.redeem() (AuditTarget.sol#38-44)
+	- Treasury_1953.topUp() (AuditTarget.sol#28-31)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+
+Detector: uninitialized-state
+Treasury_1953.vaultKeeper (AuditTarget.sol#14) is never initialized. It is used in:
+	- Treasury_1953.settleFees() (AuditTarget.sol#60-62)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-state-variables
+
+Detector: incorrect-equality
+Treasury_1953.zeroBalance() (AuditTarget.sol#64-66) uses a dangerous strict equality:
+	- address(this).balance == 0 (AuditTarget.sol#65)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+
+Detector: tx-origin
+Treasury_1953.handOver(address) (AuditTarget.sol#75-79) uses tx.origin for authorization: require(bool,string)(tx.origin == owner,not owner) (AuditTarget.sol#76)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-usage-of-txorigin
+
+Detector: timestamp
+Treasury_1953.drip() (AuditTarget.sol#68-73) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(block.timestamp >= unlockAt,locked) (AuditTarget.sol#69)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: low-level-calls
+Low level call in Treasury_1953.ownerWithdraw(uint256) (AuditTarget.sol#33-36):
+	- (ok,None) = address(owner).call{value: amount}() (AuditTarget.sol#34)
+Low level call in Treasury_1953.redeem() (AuditTarget.sol#38-44):
+	- (ok,None) = msg.sender.call{value: amount}() (AuditTarget.sol#41)
+Low level call in Treasury_1953.pickWinner() (AuditTarget.sol#51-58):
+	- (ok,None) = address(winner).call{value: address(this).balance}() (AuditTarget.sol#56)
+Low level call in Treasury_1953.drip() (AuditTarget.sol#68-73):
+	- (ok,None) = address(owner).call{value: address(this).balance / 10}() (AuditTarget.sol#71)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+
+Detector: naming-convention
+Contract Treasury_1953 (AuditTarget.sol#10-80) is not in CapWords
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+
+Detector: constable-states
+Treasury_1953.vaultKeeper (AuditTarget.sol#14) should be constant 
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+AuditTarget.sol analyzed (2 contracts with 102 detectors), 12 result(s) found
+Multiple frameworks detected: solc, Solc-json. Using solc (highest priority). Use --compile-force-framework to override.
+'solc --version' running
+'solc AuditTarget.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --allow-paths .,/mnt/d/HK5_2026/NT547/LAB/Lab06_SinhVien/Lab06_SinhVien' running

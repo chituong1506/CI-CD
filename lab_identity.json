@@ -1,0 +1,9 @@
+{
+  "mssv": "24521953",
+  "session_code": "SC-D525D5",
+  "contract": "Treasury_1953",
+  "baseline_sha256": "5c65f42c23490de79b53bfe6bd6992db406b78b499cd3caab3d06abdb012f285",
+  "generated_utc": "2026-11-20T02:51:59.937419+00:00",
+  "solidity": "0.8.24",
+  "note": "session_code sinh tai may SV, KHONG do GV cap"
+}

@@ -1,0 +1,20 @@
+Python 3.12.3
+pip 24.0 from /mnt/d/HK5_2026/NT547/LAB/Lab06_SinhVien/Lab06_SinhVien/.venv/lib/python3.12/site-packages/pip (python 3.12)
+solc, the solidity compiler commandline interface
+Version: 0.8.24+commit.e11b9ed9.Linux.g++
+0.11.6
+dot - graphviz version 2.43.0 (0)
+git version 2.43.0
+Python: 3.12.3
+git OK: /usr/bin/git
+slither OK: /mnt/d/HK5_2026/NT547/LAB/Lab06_SinhVien/Lab06_SinhVien/.venv/bin/slither
+solc OK: /mnt/d/HK5_2026/NT547/LAB/Lab06_SinhVien/Lab06_SinhVien/.venv/bin/solc
+dot OK: /usr/bin/dot
+file tools/create_lab.py OK
+file tools/scan.py OK
+file tools/print_arch.py OK
+file config/slither.raw.json OK
+file slither.config.json OK
+file .github/workflows/slither.yml OK
+file contracts/ArchitectureDemo.sol OK
+Tip: chay trong THU MUC 01_SINH_VIEN (thu muc chua tools/).
