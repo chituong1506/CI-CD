@@ -11,9 +11,11 @@ for opt,out in [('human-summary','human_summary.txt'),('inheritance-graph','prin
         sys.exit('Printer failed: '+str(p/out)+' ; xem log va cai dat.')
 files=list(pathlib.Path('.').rglob('ArchitectureDemo.sol.dot'))
 if not files:
+    files=list(pathlib.Path('.').rglob('ArchitectureDemo.sol.inheritance-graph.dot'))
+if not files:
     print('Khong tim thay *.dot. Kiem tra evidence/architecture/printer_log.txt');sys.exit(1)
 for dot in files:
-    dest=p/dot.name
+    dest=p/'ArchitectureDemo.sol.dot'
     if dot.resolve()!=dest.resolve():shutil.copy2(dot,dest)
     if shutil.which('dot'):
         result=subprocess.run(['dot','-Tpng',str(dest),'-o',str(p/'inheritance.png')],capture_output=True,text=True)
